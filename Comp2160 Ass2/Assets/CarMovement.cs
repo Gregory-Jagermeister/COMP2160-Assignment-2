@@ -7,8 +7,9 @@ public class CarMovement : MonoBehaviour
 {
   // Start is called before the first frame update
   private Rigidbody rb;
-  public float thrust;
-
+  public float maxSpeed;
+  public float accel;
+  private float speed;
   public float angle;
   void Start()
   {
@@ -20,12 +21,29 @@ public class CarMovement : MonoBehaviour
   {
 
 
-    float moveDir = Input.GetAxisRaw("Vertical");
-    //rb.MovePosition(transform.position + (transform.forward * (moveDir * thrust)) * Time.fixedDeltaTime);
-    rb.AddForce(transform.forward * (moveDir * thrust), ForceMode.VelocityChange);
-    //rb.velocity = new Vector3(0, rb.velocity.y, thrust * moveDir);
+    float moveDir = Input.GetAxis("Vertical");
+    float rotDir = Input.GetAxis("Horizontal");
+    if (moveDir > 0)
+    {
+      if (speed < maxSpeed) speed += accel;
+    }
+    else if (moveDir < 0)
+    {
+      if (speed > -maxSpeed) speed -= accel;
+    }
+    else
+    {
+      if (speed > -.1f && speed < .1f) speed = 0f;
+      if (speed != 0f) speed = speed * 0.9f;
+    }
 
-    float rotDir = Input.GetAxisRaw("Horizontal");
+    Mathf.Clamp(speed, -maxSpeed, maxSpeed);
+    Vector3 currentVelocityVector = transform.InverseTransformDirection(rb.velocity);
+    currentVelocityVector.z = speed;
+    currentVelocityVector.x = 0f;
+
+    rb.velocity = transform.TransformDirection(currentVelocityVector);
+
     Vector3 EulerAngleVelocity = new Vector3(0, angle, 0);
 
     Quaternion deltaRot;

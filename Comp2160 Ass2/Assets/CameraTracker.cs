@@ -29,6 +29,19 @@ public class CameraTracker : MonoBehaviour
 
     transform.position = smoothedPos;
 
-    transform.LookAt(target);
+
+  }
+
+  private void LateUpdate()
+  {
+    if (Input.GetKey(KeyCode.E))
+    {
+      transform.RotateAround(target.position, Vector3.up, smoothSpeed * Time.deltaTime);
+    }
+
+    if (Input.GetKey(KeyCode.Q))
+    {
+      transform.RotateAround(target.position, -Vector3.up, smoothSpeed * Time.deltaTime);
+    }
   }
 }
