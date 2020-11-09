@@ -29,30 +29,51 @@ public class GameManager : MonoBehaviour
   public float healthRestored;
   // value to contain the dampen the damage sent based on collision impluse;
   public float impactReduction;
+  //Time elapsed since scene started.
+  public float timeElapsed;
+  //Reference to smoke particle system prefab
+  public ParticleSystem smokePrefab;
+  //Reference to explosion particle system prefab
+  public ParticleSystem explosionPrefab;
+  //flag to with hold whether the player is lower then 50% of their health.
+  private bool isHalfHealth = false;
 
   public void PlayerHurt(float damage)
   {
     playerHealth -= damage / impactReduction;
   }
 
-  public void PlayerDeath()
+  public IEnumerator PlayerDeath()
   {
     Destroy(player.gameObject);
-    UIManager.Instance.SetHealthValue(0F);
+    ParticleSystem explosion = Instantiate(explosionPrefab, player.position, Quaternion.identity);
+    explosion.Play();
+    Debug.Log(explosion.main.duration);
+    yield return new WaitForSeconds(explosion.main.duration);
+    PlayerHealthRestored();
   }
 
   public void PlayerHealthRestored()
   {
-    playerHealth += healthRestored
+    playerHealth += healthRestored;
   }
 
   // Update is called once per frame
-  void LateUpdate()
+  void Update()
   {
+    timeElapsed += Time.deltaTime;
+    UIManager.Instance.SetTimerText(timeElapsed);
     UIManager.Instance.SetHealthValue(playerHealth);
-    if (playerHealth <= 0 && player != null)
+    if (playerHealth <= 0.1 && player != null)
     {
-      PlayerDeath();
+      playerHealth = 0;
+      StartCoroutine(PlayerDeath());
+    }
+    else if (playerHealth <= 50 && !isHalfHealth)
+    {
+      ParticleSystem smoke = Instantiate(smokePrefab, player);
+      smoke.Play();
+      isHalfHealth = true;
     }
   }
 }
