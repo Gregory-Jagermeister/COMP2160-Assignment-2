@@ -12,15 +12,47 @@ public class CarMovement : MonoBehaviour
   public float accel;
   private float speed;
   public float angle;
+  public float groundThreshold;
+
+  public LayerMask groundLayer;
+
   void Start()
   {
     rb = GetComponent<Rigidbody>();
   }
 
   // Update is called once per frame
+
+  private bool IsGrounded()
+  {
+    Ray ray = new Ray(transform.position, Vector3.down);
+    RaycastHit hit;
+
+    if (Physics.Raycast(ray, out hit, Mathf.Infinity, groundLayer) && (hit.distance <= groundThreshold))
+    {
+      Debug.Log("Ground Hit");
+      Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.white);
+      return true;
+    }
+    else
+    {
+      Debug.Log("ground Not hit");
+      Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.white);
+      return false;
+
+    }
+  }
+
   void FixedUpdate()
   {
+    if (IsGrounded())
+    {
+      DriveController();
+    }
+  }
 
+  private void DriveController()
+  {
     rb.centerOfMass = centreMass;
     float moveDir = Input.GetAxis("Vertical");
     float rotDir = Input.GetAxis("Horizontal");
@@ -60,10 +92,8 @@ public class CarMovement : MonoBehaviour
         rb.MoveRotation(rb.rotation * deltaRot);
       }
     }
-
-
-
   }
+
   private void OnDrawGizmos()
   {
     Gizmos.color = Color.red;

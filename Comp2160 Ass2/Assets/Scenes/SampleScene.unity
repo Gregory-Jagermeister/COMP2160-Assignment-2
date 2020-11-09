@@ -423,6 +423,10 @@ MonoBehaviour:
   maxSpeed: 10
   accel: 1.51
   angle: 100
+  groundThreshold: 1.2
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &1774517462
 GameObject:
   m_ObjectHideFlags: 0
