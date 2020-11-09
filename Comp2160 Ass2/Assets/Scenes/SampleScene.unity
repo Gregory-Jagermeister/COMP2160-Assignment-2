@@ -419,7 +419,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b60f33f100dc184cae84842abc44c94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 15
+  centreMass: {x: 0, y: -0.75, z: 0}
+  maxSpeed: 10
   accel: 1.51
   angle: 100
 --- !u!1 &1774517462
@@ -527,9 +528,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c337ab14af7d134468305b9fe3bd16e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1012334234}
-  smoothSpeed: 10
-  offset: {x: 0, y: 1.5, z: -8}
+  target: {fileID: 1012334229}
+  distance: 6.4
+  height: 1.4
+  rotateThreshold: -1.5
+  rotationDamping: 3
+  heightDamping: 2
+  zoomRatio: 0.5
+  DefaultFOV: 60
 --- !u!4 &1811531517
 Transform:
   m_ObjectHideFlags: 0

@@ -6,7 +6,8 @@ using UnityEngine;
 public class CarMovement : MonoBehaviour
 {
   // Start is called before the first frame update
-  private Rigidbody rb;
+  protected Rigidbody rb;
+  public Vector3 centreMass;
   public float maxSpeed;
   public float accel;
   private float speed;
@@ -20,7 +21,7 @@ public class CarMovement : MonoBehaviour
   void FixedUpdate()
   {
 
-
+    rb.centerOfMass = centreMass;
     float moveDir = Input.GetAxis("Vertical");
     float rotDir = Input.GetAxis("Horizontal");
     if (moveDir > 0)
@@ -38,13 +39,11 @@ public class CarMovement : MonoBehaviour
     }
 
     Mathf.Clamp(speed, -maxSpeed, maxSpeed);
-    Vector3 currentVelocityVector = transform.InverseTransformDirection(rb.velocity);
-    currentVelocityVector.z = speed;
-    currentVelocityVector.x = 0f;
+    float speedAdjustment = speed - transform.InverseTransformDirection(rb.velocity).z;
+    float sideSpeedAdjustment = -transform.InverseTransformDirection(rb.velocity).x;
+    rb.AddRelativeForce(sideSpeedAdjustment, 0f, speed + speedAdjustment, ForceMode.Acceleration);
 
-    rb.velocity = transform.TransformDirection(currentVelocityVector);
-
-    Vector3 EulerAngleVelocity = new Vector3(0, angle, 0);
+    Vector3 eulerAngleVelocity = new Vector3(0, angle, 0);
 
     Quaternion deltaRot;
 
@@ -52,16 +51,22 @@ public class CarMovement : MonoBehaviour
     {
       if (moveDir > 0)
       {
-        deltaRot = Quaternion.Euler((EulerAngleVelocity * rotDir) * Time.fixedDeltaTime);
+        deltaRot = Quaternion.Euler((eulerAngleVelocity * rotDir) * Time.fixedDeltaTime);
         rb.MoveRotation(rb.rotation * deltaRot);
       }
       else
       {
-        deltaRot = Quaternion.Euler((EulerAngleVelocity * -rotDir) * Time.fixedDeltaTime);
+        deltaRot = Quaternion.Euler((eulerAngleVelocity * -rotDir) * Time.fixedDeltaTime);
         rb.MoveRotation(rb.rotation * deltaRot);
       }
     }
 
 
+
+  }
+  private void OnDrawGizmos()
+  {
+    Gizmos.color = Color.red;
+    Gizmos.DrawSphere(transform.position + transform.rotation * centreMass, 1f);
   }
 }
